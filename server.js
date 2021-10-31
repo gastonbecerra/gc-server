@@ -1,23 +1,23 @@
 var express = require('express');
 var app = express();
-var router = express.Router();
+
+// EXPRESS SERVER CONFIGURATION
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
-app.use(express.urlencoded({extended: true}))
+// ROUTES
+var moduleRoutes = require('./routes/modulesRoutes');
+var indicatorRouter = require('./routes/indicatorsRoutes');
+var contextRouter = require('./routes/contextRoutes');
+
+app.use('/modules', moduleRoutes);
+app.use('/indicators', indicatorRouter);
+app.use('/contexts', contextRouter);
 
 
-const modules = [
-    {"title": "title 1"}
-]
-
-
-app.get('/api/modulos', function(req,res){
-    res.send(["Vida Finaciera", "Sex-appeal", "Modulo 3"])
-})
-
-
-app.get('/api/indicadores', function(req,res){
-    res.send(["Ahorro", "Satisfacción Laboral", "Indicador 3"])
-})
-
-app.listen(8080)
+app.listen(8080, () =>
+    console.log('Servidor escuchando en http://localhost:8080')
+).on("error", (err) => {
+    console.log("error", err);
+});
