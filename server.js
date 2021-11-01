@@ -4,9 +4,11 @@ var app = express();
 
 //DATABASE MONGOOSE
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOURL, { useNewUrlParser: true, useUnifiedTopology: true })
-.then(()=> console.log('CONECTED TO MONGO ATLAS'))
-.catch(err => console.log(err))
+mongoose.connect(process.env.MONGOURL, 
+    { useNewUrlParser: true, 
+    useUnifiedTopology: true })
+    .then(()=> console.log('CONECTED TO MONGO ATLAS'))
+    .catch(err => console.log(err))
 
 // EXPRESS SERVER CONFIGURATION
 app.use(express.json());

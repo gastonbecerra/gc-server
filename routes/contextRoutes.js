@@ -11,8 +11,8 @@ contextRouter.get('/basics', function(req,res){
 })
 
 //GET CONTEXTS FROM MONGO
-contextRouter.get('/api/basics', function(req,res){
-    res.send(basicContexts)
+contextRouter.get('/api/basics', async (req,res) => {
+    res.json(await controller.getContexts())
 })
 
 

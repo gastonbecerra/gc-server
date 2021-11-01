@@ -1,9 +1,7 @@
 var mongoose = require('mongoose');
 
-const schema = mongoose.Schema({
-    context:{type: Array},
+const contextSchema = new mongoose.Schema({
+    contexts:{type: Array},
 });
 
-const contexts = mongoose.model('contexts', schema);
-
-module.exports = contexts;
+module.exports = mongoose.model('contexts', contextSchema);
