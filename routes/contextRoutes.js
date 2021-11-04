@@ -8,6 +8,7 @@ var controller = new ContextController();
 //GET ALL BASICS CONTEXTS
 contextRouter.get('/basics', function(req,res){
     res.send(basicContexts)
+    res.redirect()
 })
 
 //GET CONTEXTS FROM MONGO
