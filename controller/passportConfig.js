@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const localStrategy = require('passport-local').Strategy;
 var userModel = require('../database/mongo/userModel');
+const passport = require('passport');
 
 module.exports = function (passport) {
     passport.use(
@@ -29,6 +30,7 @@ module.exports = function (passport) {
         const userInformation = {
           username: user.username,
           id: user.id,
+          type: user.type
         };
         cb(err, userInformation);
       });

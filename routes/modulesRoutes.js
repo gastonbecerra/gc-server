@@ -1,6 +1,4 @@
-
 var express = require('express');
-var app = express();
 var moduleRouter = express.Router();
 var basicModules = require('../database/basicModules');
 var ModuleController = require('../controller/moduleController');
