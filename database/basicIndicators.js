@@ -1,6 +1,8 @@
 const financieros = {
     indicadores: [
-        {name: "Ahorro"}, {name: "Satisfacción Laboral"}, {name: "Indicador 3"}
+        {name: "Ahorro"}, 
+        {name: "Satisfacción Laboral"}, 
+        {name: "Indicador 3"}
     ]
 }
 

@@ -4,7 +4,7 @@ class ModuleController {
     
     // MATCH ROUTE FOR CONTEXT GET ALLS
     async getModules() {
-        const modules = await moduleModel.findOne({})
+        const modules = await moduleModel.find({})
         if(modules.length === 0){
             return {eror: "error reading context db"}
         }else{

@@ -16,6 +16,12 @@ contextRouter.get('/api/basics', async (req,res) => {
     res.json(await controller.getContexts())
 })
 
+contextRouter.get('/api/contexts', async (req,res) => {
+    res.json(await controller.getContexts())
+})
+
+
+
 
 
 

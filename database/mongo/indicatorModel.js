@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 
 const indicatorSchema = new mongoose.Schema({
-    name: {type: String},
-    indicadores:{type: Array}
+    name:  String,
+    formula: String,
+    description: String
 });
 
 module.exports = mongoose.model('indicators', indicatorSchema);

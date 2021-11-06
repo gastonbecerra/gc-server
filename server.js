@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
-var userModel = require('./database/mongo/userModel')
 
 //------------------------------------------Middleware configuration------------------------------------------//
 app.use(bodyParser.json())

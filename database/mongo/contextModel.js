@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 
 const contextSchema = new mongoose.Schema({
-    contexts:{type: Array},
+    name: String,
+    created: Date
 });
 
 module.exports = mongoose.model('contexts', contextSchema);
