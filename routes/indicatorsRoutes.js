@@ -42,7 +42,7 @@ indicatorRouter.get('/input/:id_indicador/:id_contexto/:id_usuario', async (req,
     })
 
     const records = await inputModel.find().where('variable').in(inputsExpresions).exec(); //=> add another where for userId
-
+    console.log(inputsExpresions    );
     res.send(records)
     // const indicador = indicatorModel.findOne({name:""})
 

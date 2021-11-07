@@ -51,11 +51,13 @@ var moduleRoutes = require('./routes/modulesRoutes');
 var indicatorRouter = require('./routes/indicatorsRoutes');
 var contextRouter = require('./routes/contextRoutes');
 var userRouter = require('./routes/userRoutes');
+var inputRouter = require('./routes/inputRoutes');
 
 app.use('/modules', moduleRoutes);
 app.use('/indicators', indicatorRouter);
 app.use('/contexts', contextRouter);
 app.use('', userRouter);
+app.use('', inputRouter);
 
 
 //---------------------------------------------------SERVER---------------------------------------------------//
