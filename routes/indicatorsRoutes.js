@@ -1,104 +1,85 @@
 
 var express = require('express');
 var indicatorRouter = express.Router();
-var {financieros, sexAppeal, modulo3} = require('../database/basicIndicators')
 var IndicatorController = require('../controller/indicatorController')
 var controller = new IndicatorController();
 var indicatorModel = require('../database/mongo/indicatorModel');
 var inputModel = require('../database/mongo/inputModel');
 
-//GET BASIC INDICATORS BY ID
-indicatorRouter.get('/basics/:id', function(req,res){
-    req.params.id == '61803b098d4b26307ac61c71' ? res.send(financieros) : null
-    req.params.id == '61803c788d4b26307ac61c72' ? res.send(sexAppeal) : null
-    req.params.id == '618042138d4b26307ac61c73' ? res.send(modulo3) : null
-})
 
-//GET CONTEXTS FROM MONGO
-indicatorRouter.get('/api/basics', async (req,res) => {
+indicatorRouter.get('/', async (req,res) => {
     res.json(await controller.getIndicators())
 })
 
-//GET BASIC INDICATORS BY ID FROM MONGO
-indicatorRouter.get('/api/basics/:id', async (req,res)=>{
+indicatorRouter.get('/:id', async (req,res)=>{
     res.json(await controller.getIndicatorById(req.params.id))
 })
 
-indicatorRouter.get('/input/:id_indicador/:id_contexto/:id_usuario', async (req, res)=>{
-    // res.send(req.params);
+indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=>{
+    
     const {id_indicador, id_contexto, id_usuario} = req.params;
-    // res.send('estas bien')
-    // res.json({id_indicador, id_contexto, id_usuario})
-    //1 traer de mongo info del indicador: fórmula y variables requeridas
+    // res.json(req.params);
+
+    // 1) traer de mongo info del indicador: fórmula y variables requeridas
     const indicador = await indicatorModel.findById({_id:id_indicador})
     const formula = indicador.formula;
-    var expresiones = formula.split(" ")
+
     var inputsExpresions = []
-    expresiones.forEach((e)=>{
-        if(e.substring(0,3) === 'var'){
-            inputsExpresions.push(e.substring(4,e.length))
-            console.log(e.length);
+    formula.forEach((e)=>{
+        if(e.tipo.substring(0,3) === 'var'){
+            inputsExpresions.push(e.termino)
         }
     })
 
-    const records = await inputModel.find().where('variable').in(inputsExpresions).exec(); //=> add another where for userId
+    const indicator_json = indicador
 
-    res.send(records)
+    // 2) traer de mongo inputs del usuario 
+
+    // const inputs = await inputModel.find().where('variable').in(inputsExpresions).exec();
+    const inputs = await inputModel.
+        find({
+            variable: { $in: inputsExpresions },
+            user: id_usuario
+        })
+
+    console.log(inputs)
+
+    var inputsActuales = []
+    inputs.forEach((e)=>{
+        inputsActuales.push(e.variable)
+    })
+
+    let diff = inputsExpresions.filter(x => !inputsActuales.includes(x));
+
+    const input_json = {
+        inputs: inputs,
+        inputs_faltantes: diff
+    }
+
+    // 2do: obviamente no necesito los inputs enteros...
+
+    // 3) traer de mongo el contexto del indicador 
+
+    const context_json = {}
+
     // const indicador = indicatorModel.findOne({name:""})
 
-    //2 traer de mongo inputs del usuario 
-    //3 traer de mongo el contexto del indicador (hardcodeado)
-    /*
+    // 4) los contextos del usuario?
+    
+    user_json = {
+        id: id_usuario,
+    }
 
-    json = {
-        'indicador': {
-            'titulo': 'xxx',
-            'formula': 'xxx',
-            'descripcion': 'xxx',
-            'tipo': 'hist',
-        },
+    res.json(
 
-        'muestra':{ // indicador x contexto  <--- ciencia de datos
-            'data': [
-                '0-2':5,
-                '3-5':10,
-                '6-10':3
-            ]
-
-        // ciencia de datos:
-        // via cron
-        // listar indicadores
-        // que usuarios estan en un contexto? ---> usuario x contexto
-        // (anonimizacion + validacion de la muestra)
-        // buscar los input para esos usuarios
-        // para cada uno, calculo el indicador con la formula
-        // despues armo una distribucion (contexto), segun el tipo de grafico (e.g., histograma)
-
-        },
-        'usuario':{
-            'last_inputs':
-                [0: {
-                    variable: 'ingresos',
-                    valor: '100',
-                    fecha: 'xxxx'
-                },
-                1: {
-                    variable: 'gastos',
-                    valor: '50',
-                    fecha: 'xxxx'
-                }],}
-                
-                
-                // --> si actualiza o mete dato,
-                // entonces se dispara jose ciencia de datos
-                // que calcula los indicadores donde se usa esta variable
-            
-                valor_calculado: 50
+        {
+            indicator: indicator_json,
+            inputs: input_json,
+            context: context_json,
+            user: user_json
         }
 
-    }
-    */
-
+    )
 
 })
 

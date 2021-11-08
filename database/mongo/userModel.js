@@ -8,6 +8,7 @@ const userSchema = mongoose.Schema({
     /* 
     contexts []
     indicators[]
+    context: ['Macristas', 'Kirchneristas', 'Cordobeses']
     ...
     */
 });
