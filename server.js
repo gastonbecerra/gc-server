@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 //------------------------------------------DATABASE MONGOOSE--------------------------------------------//
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOURL, 
+mongoose.connect(process.env.MONGOLOCAL, 
     { useNewUrlParser: true, 
     useUnifiedTopology: true })
     .then(()=> console.log('CONECTED TO MONGO ATLAS'))
@@ -52,7 +52,9 @@ var indicatorRouter = require('./routes/indicatorsRoutes');
 var contextRouter = require('./routes/contextRoutes');
 var userRouter = require('./routes/userRoutes');
 var inputRouter = require('./routes/inputRoutes');
+var renderRouter = require('./routes/renderRouter');
 
+app.use('', renderRouter);
 app.use('/modules', moduleRoutes);
 app.use('/indicators', indicatorRouter);
 app.use('/contexts', contextRouter);
