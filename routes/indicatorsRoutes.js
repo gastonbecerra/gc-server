@@ -5,7 +5,8 @@ var IndicatorController = require('../controller/indicatorController')
 var controller = new IndicatorController();
 var indicatorModel = require('../database/mongo/indicatorModel');
 var inputModel = require('../database/mongo/inputModel');
-
+var SampleController = require('../controller/sampleController');
+var sampleController = new SampleController();
 
 indicatorRouter.get('/', async (req,res) => {
     res.json(await controller.getIndicators())
@@ -61,7 +62,8 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
 
     // 3) traer de mongo el contexto del indicador 
 
-    const sample_json = {}
+    
+    const sample_json = await sampleController.getByIndicatorAndContext(id_indicador, id_contexto)
 
     // const indicador = indicatorModel.findOne({name:""})
 
