@@ -18,7 +18,6 @@ indicatorRouter.get('/:id', async (req,res)=>{
 indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=>{
     
     const {id_indicador, id_contexto, id_usuario} = req.params;
-    // res.json(req.params);
 
     // 1) traer de mongo info del indicador: fórmula y variables requeridas
     const indicador = await indicatorModel.findById({_id:id_indicador})
@@ -42,7 +41,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
             user: id_usuario
         })
 
-    console.log(inputs)
+    // console.log(inputs)
 
     var inputsActuales = []
     inputs.forEach((e)=>{
@@ -51,6 +50,8 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
 
     let diff = inputsExpresions.filter(x => !inputsActuales.includes(x));
 
+    diff.length === 0 ? diff = false : null;
+    
     const input_json = {
         inputs: inputs,
         inputs_faltantes: diff
@@ -60,7 +61,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
 
     // 3) traer de mongo el contexto del indicador 
 
-    const context_json = {}
+    const sample_json = {}
 
     // const indicador = indicatorModel.findOne({name:""})
 
@@ -75,7 +76,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
         {
             indicator: indicator_json,
             inputs: input_json,
-            context: context_json,
+            context: sample_json,
             user: user_json
         }
 

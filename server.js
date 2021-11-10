@@ -52,12 +52,14 @@ var indicatorRouter = require('./routes/indicatorsRoutes');
 var contextRouter = require('./routes/contextRoutes');
 var userRouter = require('./routes/userRoutes');
 var inputRouter = require('./routes/inputRoutes');
+var sampleRouter = require('./routes/sampleRoutes');
 
 app.use('/modules', moduleRoutes);
 app.use('/indicators', indicatorRouter);
 app.use('/contexts', contextRouter);
 app.use('/inputs', inputRouter);
 app.use('', userRouter);
+app.use('/sample', sampleRouter);
 
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>
