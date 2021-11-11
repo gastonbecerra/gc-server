@@ -65,6 +65,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
     
     const sample_json = await sampleController.getByIndicatorAndContext(id_indicador, id_contexto)
 
+    console.log(id_contexto, sample_json, id_indicador);
     // const indicador = indicatorModel.findOne({name:""})
 
     // 4) los contextos del usuario?
