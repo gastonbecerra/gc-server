@@ -7,6 +7,7 @@ var indicatorModel = require('../database/mongo/indicatorModel');
 var inputModel = require('../database/mongo/inputModel');
 var SampleController = require('../controller/sampleController');
 var sampleController = new SampleController();
+var UserIndicador = require('../database/mongo/userIndicator');
 
 indicatorRouter.get('/', async (req,res) => {
     res.json(await controller.getIndicators())
@@ -63,16 +64,29 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
     // 3) traer de mongo el contexto del indicador 
 
     
-    const sample_json = await sampleController.getByIndicatorAndContext(id_indicador, id_contexto)
+    let sample_json = await sampleController.getByIndicatorAndContext(id_indicador, id_contexto)
+
+    sample_json.length === 0 ? sample_json = false : null;
 
     console.log(id_contexto, sample_json, id_indicador);
     // const indicador = indicatorModel.findOne({name:""})
 
     // 4) los contextos del usuario?
-    
-    user_json = {
-        id: id_usuario,
+
+    /* => ¿Agregar los contextos que necesita?
+        => Traer de mongo el valor del método => userindicador */
+        let userValue = await UserIndicador.findOne({user: id_usuario});
+        
+        console.log(80, userValue);
+        
+        userValue === null ? userValue = false : null;
+
+        console.log(84, userValue);
+
+        user_json = {
+        user: userValue,
     }
+    
 
     res.json(
 
