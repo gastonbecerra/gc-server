@@ -41,26 +41,14 @@ app.use(cors({
 app.use(cookieParser('shhh'))
 
 //----------------------------------------------------------PASSPORT-----------------------------------------------------//
-const passport = require('passport');
-app.use(passport.initialize())
-app.use(passport.session());
-require('./controller/passportConfig')(passport);
+// const passport = require('passport');
+// app.use(passport.initialize())
+// app.use(passport.session());
+// require('./controller/passportConfig')(passport);
 
 //--------------------------------------------------------------ROUTES---------------------------------------------------------//
-var moduleRoutes = require('./routes/modulesRoutes');
-var indicatorRouter = require('./routes/indicatorsRoutes');
-var contextRouter = require('./routes/contextRoutes');
-var userRouter = require('./routes/userRoutes');
-var inputRouter = require('./routes/inputRoutes');
-var renderRouter = require('./routes/renderRouter');
-
-app.use('', renderRouter);
-app.use('/modules', moduleRoutes);
-app.use('/indicators', indicatorRouter);
-app.use('/contexts', contextRouter);
-app.use('', userRouter);
-app.use('', inputRouter);
-
+const inputRouter = require('./routes/inputRoutes');
+app.use('/inputs', inputRouter);
 
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>

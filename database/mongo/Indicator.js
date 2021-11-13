@@ -1,6 +1,4 @@
 var mongoose = require('mongoose');
-var Module = require('./Module');
-var Variable = require('./Variable');
 
 const IndicatorSchema = new mongoose.Schema({
    name:String,
@@ -11,6 +9,6 @@ const IndicatorSchema = new mongoose.Schema({
    display_type: String
 });
 
-const Indicator = mongoose.model('indicators', IndicatorSchema);
+const Indicator = mongoose.model('Indicator', IndicatorSchema);
 
 module.exports = Indicator;
