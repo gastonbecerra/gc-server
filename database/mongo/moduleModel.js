@@ -2,7 +2,12 @@ var mongoose = require('mongoose');
 
 const moduleSchema = new mongoose.Schema({
    title:String,
-   text:String
+   text:String,
+   indicators : {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'indicators'
+   }
 });
 
-module.exports = mongoose.model('modules', moduleSchema);
+const Module = mongoose.model('modules', moduleSchema);
+module.exports = Module;
