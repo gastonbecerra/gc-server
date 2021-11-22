@@ -2,7 +2,7 @@ var bcrypt = require('bcrypt');
 var express = require('express');
 var userRouter = express.Router();
 const passport = require('passport');
-var userModel = require('../database/mongo/userModel');
+var User = require('../database/mongo/User');
 
 // AUTH Routes
 userRouter.post("/login", (req, res, next) => {
@@ -19,12 +19,12 @@ userRouter.post("/login", (req, res, next) => {
 });
 
 userRouter.post("/register", (req, res) => {
-  userModel.findOne({ username: req.body.username }, async (err, doc) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
     if (err) throw err;
     if (doc) res.send("user-already-registered");
     if (!doc) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      const newUser = new userModel({
+      const newUser = new User({
         username: req.body.username,
         password: hashedPassword,
         type: req.body.admin ? 'admin' : 'user' // TD: define the wyat to assign proper role
