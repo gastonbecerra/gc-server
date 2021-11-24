@@ -17,9 +17,5 @@ moduleRouter.get('/mindicators', async (req,res) => {
     res.send(results)
 })
 
-moduleRouter.get('/:id_modulo', async (req,res)=>{
-    const records = await indicatorModel.find().where('module').in(req.params.id_modulo).exec();
-    res.send(records)
-})
 
 module.exports =  moduleRouter;
