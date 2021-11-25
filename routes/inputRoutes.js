@@ -35,4 +35,8 @@ inputRouter.post('/', (req, res)=>{
     })
 })
 
+inputRouter.put('/', (req, res)=>{
+
+})
+
 module.exports =  inputRouter;

@@ -4,7 +4,12 @@ const inputSchema = mongoose.Schema({
     user: String,
     variable: String,
     value: String,
-    timestamp: Date
+    timestamp: {
+        type: Date,
+        default: Date.now()
+    }
 })
 
-module.exports = mongoose.model('inputs', inputSchema);
+const Input = mongoose.model('inputs', inputSchema);
+
+module.exports = Input;

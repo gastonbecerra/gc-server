@@ -43,8 +43,6 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
             user: id_usuario
         })
 
-    // console.log(inputs)
-
     var inputsActuales = []
     inputs.forEach((e)=>{
         inputsActuales.push(e.variable)
@@ -59,11 +57,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
         inputs_faltantes: diff
     }
 
-    // 2do: obviamente no necesito los inputs enteros...
-
     // 3) traer de mongo el contexto del indicador 
-
-    
     let sample_json = await sampleController.getByIndicatorAndContext(id_indicador, id_contexto)
 
     sample_json.length === 0 ? sample_json = false : null;
@@ -96,12 +90,7 @@ indicatorRouter.get('/:id_indicador/:id_contexto/:id_usuario', async (req, res)=
             context: sample_json,
             user: user_json
         }
-
     )
-
 })
-
-
-
 
 module.exports =  indicatorRouter;

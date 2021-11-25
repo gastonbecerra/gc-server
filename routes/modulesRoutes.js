@@ -4,7 +4,6 @@ var Module = require('../database/mongo/moduleModel')
 
 var ModuleController = require('../controller/moduleController');
 var controller = new ModuleController();
-var indicatorModel = require('../database/mongo/indicatorModel');
 
 //GET ALL MODULES FROM MONGO
 moduleRouter.get('/', async (req,res) => {
