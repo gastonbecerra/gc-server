@@ -5,9 +5,8 @@ const SampleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Indicator'
     },
-    context: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Context'
+    contexto: {
+        type: String,
     },
     values: {
         

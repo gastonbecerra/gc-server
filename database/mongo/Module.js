@@ -4,7 +4,10 @@ var Indicator = require('./Indicator');
 const ModuleSchema = new mongoose.Schema({
    title:String,
    text:String,
-   indicators: [mongoose.Schema.Types.ObjectId],
+   indicators: {
+      type:[mongoose.Schema.Types.ObjectId],
+      ref: 'Indicator'
+   },
 });
 
 const Module =  mongoose.model('modules', ModuleSchema);

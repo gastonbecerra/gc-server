@@ -5,28 +5,83 @@ var User = require('../database/mongo/User');
 var Indicator = require('../database/mongo/Indicator');
 var Sample = require('../database/mongo/Sample');
 var UserIndicator = require('../database/mongo/UserIndicator');
+var Variable = require('../database/mongo/Variable')
 
-//GET INPUTS BY USERS ID and INPUTS NAMES
-var inputs = ['ingreso', 'gastos']
-var id = '6185c7cf68d6c5cf24be977e'
-
-let joe, input;
-
-inputRouter.get('/', (req,res)=>{
-    joe = new User({username: 'JoeB'})
+inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
+    // 1) traer de mongo info del indicador: fórmula y variables requeridas
+    const indicator = await Indicator.findOne({ _id: req.params.indicator_id }).populate({path: 'variables', model: Variable});
+  
+    var { variables } = indicator;
+    var vars = []
+    variables.forEach((v)=> vars.push(v.name))
     
-    input = new Input({name: 'ingreso', value: 12})
+    // 2) traer  inputs del usuario asociados al indicador
+    var user_inputs = await Input.find({
+        $and: [
+        {name: { $in: vars }},
+        {user: req.params.user_id}
+        ]
+    })
+    user_inputs.length === 0 ? user_inputs = false : null;
 
-    joe.inputs.push(input);
-    input.user = joe;
+    // 3) identificar, en caso que haya, los inputs faltantes para el usuario
+    let user_inputs_required;
+    var uvars = [];
+    
+    user_inputs === false ? user_inputs_required = variables : null;
+    user_inputs !== false ? user_inputs.forEach((v) => uvars.push(v.name)) : null;
+    user_inputs !== false ? user_inputs_required = vars.filter(x => !uvars.includes(x)) : null;
 
-    Promise.all([
-        joe.save(),
-        input.save()])
-    .then((results)=> 
-        res.json(results));
+    inputs_required = await Variable.find({
+        name:  {$in: user_inputs === false ? vars : user_inputs_required } 
+    })
+    inputs_required.length === 0 ? inputs_required = false : null;
+
+    // 4) traer de mongo la muestra del indicador y contexto seleccionado
+    var sample = await Sample.find({
+            $and: [
+                {indicator: req.params.indicator_id},
+                {contexto: req.params.context_id}
+            ]
+    })
+    
+    sample.length === 0 ? sample = false : null;
+    
+    // 5) traer de mongo el valor de indicador para usuario
+    var user_value = await UserIndicator.find({
+            user: req.params.user_id,
+            indicator: req.params.indicator_id,
+        })
+        user_value.length === 0 ? user_value = false : null;
+        
+    let user_data = {
+        inputs: user_inputs,
+        inputs_required,
+        user_value
+    }
+    
+    res.json({indicator, user_data, sample})
 });
 
+inputRouter.post('/', (req, res)=>{
+    const {name, variable, value, user} = req.body;
+    const newInput = new Input({
+        name, 
+        variable, 
+        value, 
+        user
+    })
+    newInput.save()
+    .then((input)=>{
+        res.json(true)
+    })
+    .catch(err =>{
+        res.send(false)
+    })
+})
+
+
+// POPULATING EXAMPLES
 inputRouter.get('/populated', async (req,res)=>{
     var results = await User.find({username: 'JoeB'})
     .populate('userindicators')
@@ -47,44 +102,6 @@ inputRouter.get('/fullpopulated', async (req,res)=>{
     res.json(results)
 });
 
-inputRouter.get('/full/:id_indicator/:id_user/:id_context', async (req,res)=>{
-    // 1) traer de mongo info del indicador: fórmula y variables requeridas
-    var indicator = await Indicator.findById({_id: req.params.id_indicator})
-    var {variables: required_variables, id, name, description, formula, module, display_type, variables } = indicator;
-
-    // 2) traer de mongo inputs del usuario asociados al indicador
-    var user_inputs = await Input.find({
-        type: { $in: required_variables },
-        user: req.params.id_user
-    })
-    user_inputs.length === 0 ? user_inputs = false : null;
-    var user_inputs_required;
-    user_inputs === false ? user_inputs_required = required_variables : user_inputs_required = required_variables.filter(x => user_inputs.includes(x))
-    
-    // 3) traer de mongo la muestra del indicador 
-    var sample = await Sample.find({
-        indicator: req.params.id_indicator,
-        context: req.params.id_context
-    })
-    sample.length === 0 ? sample = false : null;
-
-    // 4) traer de mongo el valor de indicador para usuario
-    var user_value = await UserIndicator.find({
-        user: req.params.id_user,
-        indicator: req.params.id_indicator,
-    })
-    user_value.length === 0 ? user_value = false : null;
-    
-    res.json(
-        {
-        indicator: 
-            {id, name, description, formula, display_type, variables},
-        inputs:{user_inputs,user_inputs_required },
-        sample,
-        user_value
-        }
-    )
-});
 
 module.exports = inputRouter;
 

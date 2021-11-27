@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 //------------------------------------------DATABASE MONGOOSE--------------------------------------------//
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGOLOCAL, 
+mongoose.connect(process.env.MONGOURL, 
     { useNewUrlParser: true, 
     useUnifiedTopology: true })
     .then(()=> console.log('CONECTED TO MONGO ATLAS'))
@@ -49,9 +49,13 @@ require('./controller/passportConfig')(passport);
 //--------------------------------------------------------------ROUTES---------------------------------------------------------//
 const inputRouter = require('./routes/inputRoutes');
 const userRoutes = require('./routes/userRoutes');
+const moduleRoutes = require('./routes/modulesRoutes');
+const contextRoutes = require('./routes/contextRoutes');
 
-app.use('/inputs', inputRouter);
 app.use('/', userRoutes);
+app.use('/inputs', inputRouter);
+app.use('/modules', moduleRoutes);
+app.use('/contexts', contextRoutes);
 
 
 //---------------------------------------------------SERVER---------------------------------------------------//

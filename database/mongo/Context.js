@@ -1,6 +1,6 @@
-var moongose = require('mongoose');
+var mongoose = require('mongoose');
 
-const ContextSchema = new moongose.Mongoose.Schema({
+const ContextSchema = new mongoose.Schema({
     name : {
         type: String
     },
