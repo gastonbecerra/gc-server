@@ -18,8 +18,8 @@ inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
     // 2) traer  inputs del usuario asociados al indicador
     var user_inputs = await Input.find({
         $and: [
-        {name: { $in: vars }},
-        {user: req.params.user_id}
+            {name: { $in: vars }},
+            {user: req.params.user_id}
         ]
     })
     user_inputs.length === 0 ? user_inputs = false : null;
@@ -49,8 +49,10 @@ inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
     
     // 5) traer de mongo el valor de indicador para usuario
     var user_value = await UserIndicator.find({
-            user: req.params.user_id,
-            indicator: req.params.indicator_id,
+        $and: [
+            {user: req.params.user_id},
+            {indicator: req.params.indicator_id},
+        ]
         })
         user_value.length === 0 ? user_value = false : null;
         
