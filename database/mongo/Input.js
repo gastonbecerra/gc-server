@@ -1,12 +1,9 @@
 var mongoose = require('mongoose');
 
 const InputSchema = new mongoose.Schema({
-   name:String,
+   name: String,
    value: String,
-   user: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'User'
-   },
+   user: String,
    timestamp: {
        type: Date,
        default: Date.now()

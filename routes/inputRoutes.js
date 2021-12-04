@@ -6,78 +6,96 @@ var Indicator = require('../database/mongo/Indicator');
 var Sample = require('../database/mongo/Sample');
 var UserIndicator = require('../database/mongo/UserIndicator');
 var Variable = require('../database/mongo/Variable')
+const axios = require('axios');
 
 inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
     // 1) traer de mongo info del indicador: fórmula y variables requeridas
-    const indicator = await Indicator.findOne({ _id: req.params.indicator_id }).populate({path: 'variables', model: Variable});
-  
-    var { variables } = indicator;
-    var vars = []
-    variables.forEach((v)=> vars.push(v.name))
+    const indicator = await Indicator.findOne({ _id: req.params.indicator_id })
+    const formula = indicator.formula;
+    var inputsExpresions = []
+    
+    formula.forEach((e)=>{
+        if(e.tipo.substring(0,3) === 'var'){
+            inputsExpresions.push(e.termino)
+        }
+    })
     
     // 2) traer  inputs del usuario asociados al indicador
     var user_inputs = await Input.find({
         $and: [
-        {name: { $in: vars }},
-        {user: req.params.user_id}
+            {name: { $in: inputsExpresions }},
+            {user: req.params.user_id}
         ]
     })
     user_inputs.length === 0 ? user_inputs = false : null;
 
     // 3) identificar, en caso que haya, los inputs faltantes para el usuario
-    let user_inputs_required;
+    let user_inputs_required = [];
     var uvars = [];
+    let vars = [];
     
-    user_inputs === false ? user_inputs_required = variables : null;
+    // si el usuario no tiene ningún input (user_inputs = false), entonces user_inouts_required es igual a las expresiones de inputs
+    user_inputs === false ? user_inputs_required = inputsExpresions : null;
     user_inputs !== false ? user_inputs.forEach((v) => uvars.push(v.name)) : null;
-    user_inputs !== false ? user_inputs_required = vars.filter(x => !uvars.includes(x)) : null;
-
+    user_inputs !== false ? user_inputs_required = inputsExpresions.filter(x => !uvars.includes(x)) : null;
+    
     inputs_required = await Variable.find({
-        name:  {$in: user_inputs === false ? vars : user_inputs_required } 
-    })
+            name:  {$in: user_inputs_required } 
+        })
     inputs_required.length === 0 ? inputs_required = false : null;
-
+        
     // 4) traer de mongo la muestra del indicador y contexto seleccionado
     var sample = await Sample.find({
-            $and: [
-                {indicator: req.params.indicator_id},
+        $and: [
+                {name: indicator.name},
                 {contexto: req.params.context_id}
             ]
-    })
-    
+    })            
     sample.length === 0 ? sample = false : null;
-    
+            
     // 5) traer de mongo el valor de indicador para usuario
     var user_value = await UserIndicator.find({
-            user: req.params.user_id,
-            indicator: req.params.indicator_id,
-        })
-        user_value.length === 0 ? user_value = false : null;
+                user: req.params.user_id,
+                indicator: indicator.name,
+            })
+            user_value.length === 0 ? user_value = false : null;
         
-    let user_data = {
-        inputs: user_inputs,
-        inputs_required,
-        user_value
-    }
-    
+        let user_data = {
+                inputs: user_inputs,
+                inputs_required,
+                user_value
+            }
+            
     res.json({indicator, user_data, sample})
+            
 });
 
-inputRouter.post('/', (req, res)=>{
-    const {name, variable, value, user} = req.body;
+inputRouter.post('/', async (req, res)=>{
+    const {name, indicator, value, user} = req.body;
     const newInput = new Input({
         name, 
-        variable, 
         value, 
         user
     })
     newInput.save()
-    .then((input)=>{
-        res.json(true)
+    .then(()=>{
+        axios.get('http://127.0.0.1:8010/calculate/indicador-usuario', {params: {usuario: user, indicador: indicator}})
+        .then((response)=>{
+            console.log(response);
+        })
     })
-    .catch(err =>{
-        res.send(false)
-    })
+    // .then(()=>{          
+    //     axios.get('http://127.0.0.1:8010/calculate/indicador-usuario', {params: {usuario: user, indicador: indicator}})
+    // .then((response)=>{
+    //     return response.json()
+    // })
+    // .then((data)=>{
+    //     console.log(data);
+    //     res.send(data)
+    // })
+    // .catch(err =>{
+    //     res.send(false)
+    // })
 })
 
 

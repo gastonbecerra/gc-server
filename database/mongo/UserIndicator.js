@@ -1,16 +1,10 @@
 var mongoose = require('mongoose');
 
 const UserIndicatorSchema = new mongoose.Schema({
-   name:String,
+   name: String,
    value: String,
-   user: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'User'
-   },
-   indicator: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'Indicator'
-   },
+   user: String,
+   indicator: String,
    timestamp: {
        type: Date,
        default: Date.now()
