@@ -6,7 +6,9 @@ var Indicator = require('../database/mongo/Indicator');
 var Sample = require('../database/mongo/Sample');
 var UserIndicator = require('../database/mongo/UserIndicator');
 var Variable = require('../database/mongo/Variable')
-const axios = require('axios');
+const Axios = require('axios');
+const request = require('request');
+const fetch = require('node-fetch');
 
 inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
     // 1) traer de mongo info del indicador: fórmula y variables requeridas
@@ -72,37 +74,26 @@ inputRouter.get('/full/:indicator_id/:context_id/:user_id', async (req,res)=>{
 
 inputRouter.post('/', async (req, res)=>{
     const {name, indicator, value, user} = req.body;
+    
     const newInput = new Input({
         name, 
         value, 
         user
     })
     newInput.save()
-    .then(()=>{
-        axios.get('http://127.0.0.1:8010/calculate/indicador-usuario', {params: {usuario: user, indicador: indicator}})
-        .then((response)=>{
-            console.log(response);
-        })
-        .then((data)=>{
-            res.send(data)
-        })
-        .catch(err =>{
-            res.send(true)
-        })
+    
+    fetch(`https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`)
+    .then(res => 
+        res.json())
+    .then(json => {
+        res.send({status: true, msge: "user-indicator-created"})
     })
-    // .then(()=>{          
-    //     axios.get('http://127.0.0.1:8010/calculate/indicador-usuario', {params: {usuario: user, indicador: indicator}})
-    // .then((response)=>{
-    //     return response.json()
-    // })
-    // .then((data)=>{
-    //     console.log(data);
-    //     res.send(data)
-    // })
-    // .catch(err =>{
-    //     res.send(false)
-    // })
+    .catch((err)=>{
+        res.send({status: false, msge: "error-in-user-indicator-created"})
+    })
+
 })
+
 
 //UPDATE INPUT
 inputRouter.put('/:id', (req, res, next) => {
@@ -154,3 +145,18 @@ module.exports = inputRouter;
 
 
 
+// async function getUserIndicatorValue(user, indicator){
+//     // console.log(user, indicator);
+//     // const data = await Axios({
+//     //     method: "GET",
+//     //     withCredentials: true,
+//     //     url: `https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`,
+//     //   })
+      
+//     //   return data;
+//     request(`https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`,  function (error, response, body){
+//         if (!error && response.statusCode == 200) {
+//             return JSON.parse(body)
+//         }  
+//     })
+// }
