@@ -83,6 +83,12 @@ inputRouter.post('/', async (req, res)=>{
         .then((response)=>{
             console.log(response);
         })
+        .then((data)=>{
+            res.send(data)
+        })
+        .catch(err =>{
+            res.send(true)
+        })
     })
     // .then(()=>{          
     //     axios.get('http://127.0.0.1:8010/calculate/indicador-usuario', {params: {usuario: user, indicador: indicator}})
@@ -97,6 +103,29 @@ inputRouter.post('/', async (req, res)=>{
     //     res.send(false)
     // })
 })
+
+//UPDATE INPUT
+inputRouter.put('/:id', (req, res, next) => {
+    Input.findByIdAndUpdate(req.params.id, {
+      $set: req.body
+    }, (error, data) => {
+      if (error) {
+        return next(error);
+      } else {
+        res.json(data)
+      }
+    })
+  })
+
+//DELETE INPUT
+inputRouter.delete('/:id', function (req, res) {
+    var id = req.params.id;
+  
+    Input.deleteOne({ _id: id })
+    .then((data)=>{
+        res.json({msge: 'deleted', data})
+    })
+  });
 
 
 // POPULATING EXAMPLES
