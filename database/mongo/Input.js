@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 const InputSchema = new mongoose.Schema({
    name: String,
+   observable: String,
    value: String,
    user: String,
    timestamp: {

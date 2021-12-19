@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 
 const UserIndicatorSchema = new mongoose.Schema({
-   name: String,
+   name: String, 
+   observable: String,
    value: String,
    user: String,
    indicator: String,
