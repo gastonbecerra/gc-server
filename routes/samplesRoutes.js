@@ -13,14 +13,4 @@ sampleRouter.get('/:indicator/:context', async(req, res) =>{
     res.send(response) 
 })
 
-// GET ALL SAMPLES 
-sampleRouter.get('/all', async(req, res) =>{
-    res.json(await Sample.find()) 
-})
-
-// GET SAMPLE BY ID 
-sampleRouter.get('/id', async(req, res) =>{
-    res.json(await Sample.findOne({_id: "61aac348de460000b5003645"}))
-})
-
 module.exports = sampleRouter;

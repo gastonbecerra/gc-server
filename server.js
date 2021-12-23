@@ -26,10 +26,15 @@ mongoose.connect(process.env.MONGOURL,
 
 
 //--------------------------------------------------------------ROUTES---------------------------------------------------------//
-const sampleRoutes = require('./routes/sampleRoutes');
+const sampleRoutes = require('./routes/samplesRoutes');
+const contextRoutes = require('./routes/contextsRoutes');
+const modulesRoutes = require('./routes/modulesRoutes');
+const indicatorRoutes = require('./routes/indicatorsRoutes');
 
 app.use('/samples', sampleRoutes);
-
+app.use('/contexts', contextRoutes);
+app.use('/modules', modulesRoutes);
+app.use('/indicators', indicatorRoutes);
 
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>
