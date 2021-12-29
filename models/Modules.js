@@ -6,7 +6,11 @@ const ModuleSchema = new mongoose.Schema({
     timestamp: {
         type: Date, 
         default: Date.now()
-    }
+    },
+    indicators: {
+        type:[mongoose.Schema.Types.ObjectId],
+        ref: 'Indicator'
+     },
 })
 
 const Module = mongoose.model("Module", ModuleSchema, "modules");
