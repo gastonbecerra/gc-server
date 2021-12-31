@@ -58,7 +58,7 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
         { var: { $in: inputs } }
     )
 
-    // 4) traemos los valores del usuario (inputs)
+    // 4) traemos los valores del usuario (inputs) asociados al indicador
     
     var values =  await Values.find(        
             { $and: [
@@ -70,44 +70,73 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
 
     // 4.b ) cruzamos datos entre variables requeridas y variables existentes para el usuario
     
-    var inputs_front = [];
+    let inputs_front = []; 
     
-    if(values && inputs_info){
-        var procesedProps = [];
-        for(let y = 0 ; y < inputs_info.length; y++){            
-                for(let z = 0; z < values.length; z++){
-                    if(inputs_info[y].var == values[z].var && !procesedProps.includes(inputs_info[y].var)){
-                        if(!procesedProps.includes(inputs_info[y].var)){
-                            inputs_front.push({
-                                processed: true,
-                                _id: values[z]._id, 
-                                value: values[z].value, 
-                                user: values[z].user,
-                                timestamp: values[z].timestamp,
-                                type:inputs_info[y].type,
-                                validation:inputs_info[y].validation,
-                                ux_type:inputs_info[y].ux_type ? inputs_info[y].ux_type : 'undefined',
-                                var: inputs_info[y].var,
-                                description: inputs_info[y].description,
-                                measurement: inputs_info[y].measurement
-                            })
+    function transporter(child, parent){
+        if(child && parent){
+        var matches = [];
+        var index = 0;
+        var child = child;   
+        var parent = parent;
+        var childIndex = child.length;
+        var holder = []
+
+        try {
+            while( matches.length < parent.length){                    
+                var flag = parent[index];
+                for(var i = 0; i < child.length; i++ ){
+                if(flag.var === child[i].var){                                       
+                    !matches.includes(flag.var) 
+                        &&  
+                        holder.push({
+                            processed: true,
+                            _id: child[i]._id, 
+                            value: child[i].value, 
+                            user: child[i].user,
+                            timestamp: child[i].timestamp && child[i].timestamp,
+                            type:flag.type,
+                            validation:flag.validation,
+                            ux_input: flag.ux_input,
+                            var: flag.var,
+                            description: flag.description,
+                            measurement: flag.measurement
+                        })
+                        matches.push(flag.var);
+                        index ++;
+                        }else{
+                            childIndex --
                         }
-                        procesedProps.push(inputs_info[y].var);
-                      break;
-                    }else{                        
-                        if(!procesedProps.includes(inputs_info[y].var)){
-                            inputs_front.push(inputs_info[y])
-                            procesedProps.push(inputs_info[y].var)
-                        }
-                    }
-                  }
-            
-            
-            console.log(procesedProps)
+                                            
+                if(childIndex < 0){
+                    // console.log(27, flag.var)
+                    !matches.includes(flag.var) &&  
+                    holder.push({
+                        processed: true,
+                        type:flag.type,
+                        validation:flag.validation,
+                        ux_input: flag.ux_input,
+                        var: flag.var,
+                        description: flag.description,
+                        measurement: flag.measurement
+                    })
+                    matches.push(flag.var);
+                    index ++;
+                    childIndex = child.length;
+                }
+            }
+        }  
+        return holder;
+        
+        }catch(error){
+            return holder;
         }
-    }else if(!values){
-        inputs_front = inputs_info;
+        
+        }else if(!values){
+            inputs_front = inputs_info;
+        }   
     }
+
+    inputs_front = transporter(values, inputs_info);
 
     // 4.c ) Traemos el valor para el indicador del usuario
     // precisar si es o no variable compleja
@@ -118,7 +147,7 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
         ]
     })
     user_value.length === 0 ? user_value = false : null;
-
+    // variable_compleja ? user_value = {...user_value, dependencies: inputs_info} : user_value.dependencies = {...user_value[0], dependencies: false};
 
     // 5) traemos la info de la muestra para ese contexto/indicador
 
@@ -149,12 +178,26 @@ module.exports = indicatorRouter;
         "TIMESTAMP": "2021-12-01T03:00:00.000Z",
         "USER": 'Gastón' / FALSE,
         "VALUE": 928272 / FALSE,
-    }],
+    },
+        {
+        "_id": "61c2a647bdedfb648b771ba9",
+        "type": "int",
+        "ux_input": "",
+        "validation": "",
+        "var": "ingresos",
+        "description": "xxx",
+        "measurement": "currency"
+        "TIMESTAMP": "2021-12-01T03:00:00.000Z",
+        "USER": 'Gastón' / FALSE,
+        "VALUE": 928272 / FALSE,
+    }
+
+],
     user_value: {
         ... / FALSE
+        {}
     },
     sample: {
         ... / FALSE
-    }
-    
+    }    
 */
