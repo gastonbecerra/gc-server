@@ -27,7 +27,10 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
     // 1) traer info del indicador: fórmula y variables requeridas
 
     const indicator = await Indicator.findOne({ indicator: req.params.indicator })
+    console.log(indicator)
+
     const formula = indicator.vars;
+    console.log(formula)
 
     // 2) parseamos la formula para saber cuál es la variable y cuáles son los inputs
 
