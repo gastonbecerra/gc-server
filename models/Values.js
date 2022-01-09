@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
 const ValueSchema = new mongoose.Schema({
-    var: { type: String, },
-    value: { type: String, },
-    user: { type: String, },
+    var: { type: String },
+    value: { },
+    user: { type: String },
     timestamp: {
         type: Date, 
         default: Date.now()

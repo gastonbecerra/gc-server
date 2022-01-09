@@ -71,7 +71,8 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
     // 4.b ) cruzamos datos entre variables requeridas y variables existentes para el usuario
     
     let inputs_front = []; 
-    
+    let missing_inputs = [];
+
     function transporter(child, parent){
         if(child && parent){
         var matches = [];
@@ -83,13 +84,13 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
 
         try {
             while( matches.length < parent.length){                    
-                var flag = parent[index];
                 for(var i = 0; i < child.length; i++ ){
+                var flag = parent[index];
                 if(flag.var === child[i].var){                                       
                     !matches.includes(flag.var) 
                         &&  
                         holder.push({
-                            processed: true,
+                            required: false,
                             _id: child[i]._id, 
                             value: child[i].value, 
                             user: child[i].user,
@@ -108,10 +109,9 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
                         }
                                             
                 if(childIndex < 0){
-                    // console.log(27, flag.var)
-                    !matches.includes(flag.var) &&  
-                    holder.push({
-                        processed: true,
+                    !matches.includes(flag.var) && matches.push(flag.var);
+                    missing_inputs.push({
+                        required: true,
                         type:flag.type,
                         validation:flag.validation,
                         ux_input: flag.ux_input,
@@ -119,7 +119,6 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
                         description: flag.description,
                         measurement: flag.measurement
                     })
-                    matches.push(flag.var);
                     index ++;
                     childIndex = child.length;
                 }
@@ -137,6 +136,7 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
     }
 
     inputs_front = transporter(values, inputs_info);
+    missing_inputs.length === 0 ? missing_inputs = false : null; 
 
     // 4.c ) Traemos el valor para el indicador del usuario
     // precisar si es o no variable compleja
@@ -159,7 +159,8 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
     })            
     sample.length === 0 ? sample = false : null;
 
-    res.json({inputs_front, sample, user_value})
+
+    res.json({inputs_front, missing_inputs, sample, user_value})
 
 })
 

@@ -11,10 +11,14 @@ var mongoose = require('mongoose');
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(require('cookie-parser')());
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}))
+const corsOpts = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
+    allowedHeaders: ['Content-Type'],
+    exposedHeaders: ['Content-Type']
+};
+app.use(cors(corsOpts));
 app.use(cookieParser('shhh'))
 
 //------------------------------------------DATABASE MONGOOSE--------------------------------------------//
@@ -31,12 +35,14 @@ const contextRoutes = require('./routes/contextsRoutes');
 const modulesRoutes = require('./routes/modulesRoutes');
 const indicatorRoutes = require('./routes/indicatorsRoutes');
 const varRouter = require('./routes/varRoutes');
+const valueRouter = require('./routes/valueRoutes');
 
 app.use('/samples', sampleRoutes);
 app.use('/contexts', contextRoutes);
 app.use('/modules', modulesRoutes);
 app.use('/indicators', indicatorRoutes);
 app.use('/vars', varRouter);
+app.use('/values', valueRouter);
 
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>
