@@ -157,7 +157,7 @@ indicatorRouter.get('/:indicator/:context/:user', async (req, res) =>{
                 {context: req.params.context}
             ]
     })            
-
+    // console.log(sample);
     sample.length === 0 ? sample = false : null;
 
 
