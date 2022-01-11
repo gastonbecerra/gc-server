@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+const passportLocalMongoose = require("passport-local-mongoose");
+const findOrCreate = require("mongoose-findorcreate");
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -13,8 +15,19 @@ const UserSchema = new mongoose.Schema({
     timestamp : {
         type: Date,
         default: Date.now()
+    },
+    googleId: {
+        type: String
+    },
+    secret: {
+        type: String
+    },
+    picture: {
+        type: String
     }
 })
+UserSchema.plugin(passportLocalMongoose);
+UserSchema.plugin(findOrCreate);
 
 const User = mongoose.model("User", UserSchema, "users");
 
