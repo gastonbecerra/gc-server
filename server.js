@@ -31,12 +31,14 @@ const contextRoutes = require('./routes/contextsRoutes');
 const modulesRoutes = require('./routes/modulesRoutes');
 const indicatorRoutes = require('./routes/indicatorsRoutes');
 const varRouter = require('./routes/varRoutes');
+const inputRouter = require('./routes/inputRoutes');
 
 app.use('/samples', sampleRoutes);
 app.use('/contexts', contextRoutes);
 app.use('/modules', modulesRoutes);
 app.use('/indicators', indicatorRoutes);
 app.use('/vars', varRouter);
+app.use('/inputs', inputRouter); // redunda con var. lo duplico para que sea mas limpio nomas
 
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>
