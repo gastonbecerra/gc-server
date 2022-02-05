@@ -2,8 +2,8 @@ var express = require('express');
 var valueRouter = express.Router();
 var Var = require('../models/Vars');
 var Value = require('../models/Values');
-
-
+var request = require('request');
+var Axios = require('axios')
 // GETA ALL VALUES
 
 valueRouter.get('/', async (req, res) => {
@@ -28,7 +28,7 @@ valueRouter.put('/:id', (req, res, next) => {
     if (error) {
       return next(error);
     } else {
-      res.json(data)
+      res.json(true)
     }
   })
 })
@@ -46,7 +46,7 @@ valueRouter.post('/', async (req, res)=>{
   
   newInput.save()
   .then((data)=>{
-    res.send('true')
+    res.send(true)
   })
   .catch((error)=>{
     res.send(false)
@@ -72,5 +72,33 @@ valueRouter.post('/', async (req, res)=>{
 //         res.json({msge: 'deleted', data})
 //     })
 //   });
+
+// GENERATE NEW USER VALUE
+valueRouter.post('/user_value', async (req,res)=> {
+  var {user, indicator} = req.body;
+  // Axios({
+  //   method: 'GET',
+  //   withCredentials: true,
+  //   url: `https://stormy-citadel-88496.herokuapp.com/calculate/user-value?indicator=${indicator}&user=${user}`
+  // })
+  //   .then(json => {
+  //     console.log(86, json);
+  //       res.json({json});
+  //   })
+  var data = await Axios.get(`https://stormy-citadel-88496.herokuapp.com/calculate/user-value?indicator=${indicator}&user=${user}`)
+  console.log(data.data);
+  res.send(data.data)
+});
+
+  // fetch(`https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`)
+    // .then(res => 
+    //     res.json())
+    // .then(json => {
+    //     res.send(json)
+    // })
+    // .catch((err)=>{
+    //     res.send({status: false, msge: "error-in-user-indicator-created"})
+    // })
+// })
 
 module.exports = valueRouter;

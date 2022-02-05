@@ -18,7 +18,7 @@ varRouter.get('/:user_id', async (req, res)=>{
     
     var values =  await Values.find({user: req.params.user_id})    
     values.length === 0 ? values = false : null;
-
+    
     // 3) Hacemos el cruce de información entre variables vacías y variables llenadas x el usuario
     function transporter(child, parent){
         if(child && parent){
