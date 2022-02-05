@@ -8,9 +8,6 @@ var cookieParser = require('cookie-parser');
 var cors = require('cors');
 var mongoose = require('mongoose');
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const findOrCreate = require("mongoose-findorcreate");
 
 //-------------------------------------EXPRESS SERVER CONFIGURATION----------------------------------------------------------//
 app.use(session({
