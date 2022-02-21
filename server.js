@@ -33,7 +33,7 @@ app.use(cors(corsOpts));
 app.use(cookieParser('shhh'))
 
 //------------------------------------------DATABASE MONGOOSE--------------------------------------------//
-mongoose.connect(process.env.MONGOURL, 
+mongoose.connect("mongodb+srv://getcontext:glaZWH70VvvDJcVt@cluster0.a35d0.mongodb.net/getContext?retryWrites=true&w=majority", 
     { useNewUrlParser: true, 
     useUnifiedTopology: true })
     .then(()=> console.log('CONECTED TO MONGO ATLAS'))
