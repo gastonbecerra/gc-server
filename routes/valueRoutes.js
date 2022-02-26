@@ -2,8 +2,10 @@ var express = require('express');
 var valueRouter = express.Router();
 var Var = require('../models/Vars');
 var Value = require('../models/Values');
-var request = require('request');
 var Axios = require('axios')
+var Event = require('../models/Events')
+
+
 // GETA ALL VALUES
 
 valueRouter.get('/', async (req, res) => {
@@ -45,11 +47,29 @@ valueRouter.post('/', async (req, res)=>{
   })
   
   newInput.save()
+
   .then((data)=>{
-    res.send(true)
+    const newEvent = Event({
+      ref_id: data._id,
+      type: 'VALUE_CREATION',
+      user: data.user,
+      data: data,
+      timestamp: Date.now()
+    })
+  
+    newEvent.save()
+      .then((data)=>{
+        console.log({msge: 'SUCCESS CREATING EVENT VALUE'})
+      })
+      .catch((e)=>{
+        console.log({FAIL: e})
+      })
+    })
+  .then((data)=>{
+    res.send(DATA)
   })
   .catch((error)=>{
-    res.send(false)
+    res.send({FAIL: error })
   })
   
   // fetch(`https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`)

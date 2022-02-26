@@ -3,6 +3,7 @@ var contextRouter = express.Router();
 var Context = require('../models/Contexts');
 var Contexts4Users = require('../models/Contexts4Users');
 var Values = require('../models/Values');
+var Event = require('../models/Events');
 
 // GET ALL CONTEXTS
 contextRouter.get('', async(req, res) =>{
@@ -206,7 +207,7 @@ contextRouter.post('/counter', async (req, res)=>{
                                     ]
                                 }   
                                 )
-                                
+                                // T2: chain regex querys
                                 console.log(133, aux);
                             })
                             break;
@@ -296,10 +297,29 @@ contextRouter.post('/create', async (req, res)=>{
     })
 
     newContext.save()
+    
+    .then((data)=>{
+        const newEvent = Event({
+            ref_id: data._id,
+            type: 'CONTEXT_CREATION',
+            user: data.user,
+            data: data  
+        })
+
+        newEvent.save()
+        .then((data)=>{
+            console.log('SUCCESS RECORDING EVENT')
+        })
+        .catch((e)=>{
+            console.log({'FAIL': e});
+        })
+    })
     .then((data)=>{
         res.send(data)
     })
-
+    .catch((e)=>{
+        console.log({'FAIL': e});
+    })
 
 })
 
