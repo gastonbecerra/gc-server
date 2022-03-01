@@ -56,8 +56,233 @@ contextRouter.post('/add/:user_id/:context', async(req, res) =>{
     // res.send(response) 
 })
 
-// COUNT USERS INVOLVED IN CREATED CONTEXTS
+// CHECK IF USER IS REACHED BY SPECIFIC CONTEXT'S SCOPE
+contextRouter.post('/checkscope', async (req, res)=>{
+    // 1) catch conditions and username sent in body
+    var conditions = req.body[0];
+    var username = req.body[1];
 
+    // 2) implement switch query on none null or false conditions
+        
+    var response;
+    var response2; 
+    var qty_rules = 0;
+        
+    if(conditions[0]){
+        qty_rules = qty_rules + 1; 
+        try{
+                var response1 = []; 
+                    switch (conditions[0].op) {
+                        case '$gte':
+                            response1 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $gte: conditions[0].value } }, 
+                                    { var: conditions[0].var}
+                                ]});
+                            break;
+            
+                        case '$lte':
+                            response1 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $lte: conditions[0].value } }, 
+                                    { var: conditions[0].var}
+                                ]});
+                            break;
+                        
+                            case '$in':
+                            response1 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $in: conditions[0].value } }, 
+                                    { var: conditions[0].var}
+                                ]});
+                            break;
+
+                        case '$eq':
+                            response1 =  await Values.find({ 
+                                $and: [ 
+                                    { value: conditions[0].value  }, 
+                                    { var: conditions[0].var}
+                                ]});
+                            break;
+                        
+                        case 'btw':
+                            var v1, v2;    
+                            conditions[0].value[0] >= conditions[0].value[1] ? v1 =  conditions[0].value[0] : v1 = conditions[0].value[1];
+                            conditions[0].value[0] < conditions[0].value[1] ? v2 =  conditions[0].value[0] : v2 = conditions[0].value[1];                        
+
+                            response1 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $gt: v2, $lt: v1 } }, 
+                                    { var: conditions[0].var}
+                                ]});
+                            break;
+                            
+
+                        case 'contains':
+                            conditions[0].value.forEach((el) =>{                                
+                                
+                                var aux =  Values.find(
+                                {
+                                    $and: [
+                                        {var : conditions[0].var},
+                                        {value : {$regex: el}}
+                                    ]
+                                }   
+                                )
+                                
+                                console.log(133, aux);
+                            })
+                            break;
+
+                        default:
+                            break;                        
+                    }
+                    
+                    response1.length === 0 ? response1 = false : null;
+                    
+            }catch(e){
+                console.log(e);
+            }
+    }
+        
+    if(conditions[1]){
+        qty_rules = qty_rules + 1; 
+        try{
+                var response2 = []; 
+                    switch (conditions[1].op) {
+                        case '$gte':
+                            response2 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $gte: conditions[1].value } }, 
+                                    { var: conditions[1].var}
+                                ]});
+                            break;
+            
+                        case '$lte':
+                            response2 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $lte: conditions[1].value } }, 
+                                    { var: conditions[1].var}
+                                ]});
+                            break;
+                        
+                            case '$in':
+                            response2 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $in: conditions[1].value } }, 
+                                    { var: conditions[1].var}
+                                ]});
+                            break;
+
+                        case '$eq':
+                            response2 =  await Values.find({ 
+                                $and: [ 
+                                    { value: conditions[1].value  }, 
+                                    { var: conditions[1].var}
+                                ]});
+                            break;
+                        
+                        case 'btw':
+                            var v1, v2;    
+                            conditions[1].value[0] >= conditions[1].value[1] ? v1 =  conditions[1].value[0] : v1 = conditions[1].value[1];
+                            conditions[1].value[0] < conditions[1].value[1] ? v2 =  conditions[1].value[0] : v2 = conditions[1].value[1];                        
+
+                            response2 =  await Values.find({ 
+                                $and: [ 
+                                    { value: { $gt: v2, $lt: v1 } }, 
+                                    { var: conditions[1].var}
+                                ]});
+                            break;
+                            
+
+                        case 'contains':
+                            conditions[1].value.forEach((el) =>{                                
+                                
+                                var aux =  Values.find(
+                                {
+                                    $and: [
+                                        {var : conditions[1].var},
+                                        {value : {$regex: el}}
+                                    ]
+                                }   
+                                )
+                                // T2: chain regex querys
+                                console.log(133, aux);
+                            })
+                            break;
+
+                        default:
+                            break;                        
+                    }
+                    
+                    response2.length === 0 ? response2 = false : null;
+                    
+            }catch(e){
+                console.log(e);
+            }
+    }
+        
+    // concatenating responses data
+    if( response1 && response2 ){
+        response = response1.concat(response2)
+    }
+
+    if( response1 && !response2 ){
+        response = response1;
+    }
+
+    if( !response1 && !response2 ){
+        response = false;
+    }
+
+    if( !response1 && response2 ){
+        response = response2;
+    }
+
+    // console.log(response, qty_rules);
+
+    // finding-counting users that matches each criteria
+    var dictionary = [{user:'placeholder', vars: []}] // array of users data
+    var indexer = [] // add each user finded in response
+    var matches = []; // counts the amount of users that matches each specified criteria
+
+    try{
+
+        response.forEach((el)=>{ // iterate every reponse value
+            
+            if(indexer.includes(el.user)){ // if users is alredy indexed in indexer
+                var index = dictionary.findIndex((item) => item.user === el.user) // go find de index where it is
+                if(!dictionary[index].vars.includes(el.var)){ // if user's vars dont have el.var still added
+                    dictionary[index].vars.push(el.var)       // => push it  
+                    dictionary[index].vars.length === qty_rules ? matches.push(el.user)  : null; // if user have all rules, matches ++ 
+                    indexer.push(el.user) // add user into indexer
+                }  
+            }
+
+            if(!indexer.includes(el.user)){ // if users is not yet indexed
+                dictionary.push( // => push its data into the dictionary
+                    {
+                        user: el.user, vars: [el.var]
+                    })
+                    var index = dictionary.findIndex((item) => item.user === el.user) // go find de index where it is
+                    dictionary[index].vars.length === qty_rules ? matches.push(el.user)  : null; // if user have all rules, matches ++
+                    indexer.push(el.user) // add user into indexer
+            }
+        })
+        
+        }catch(e){
+            console.log(e);
+        }
+
+        // console.log(matches, dictionary);
+
+        res.send({matches, dictionary})
+
+
+    
+})
+
+// COUNT USERS INVOLVED IN CREATED CONTEXTS
 contextRouter.post('/counter', async (req, res)=>{
     
     // 1) catch conditions sent in body
@@ -245,7 +470,7 @@ contextRouter.post('/counter', async (req, res)=>{
     // finding-counting users that matches each criteria
     var dictionary = [{user:'placeholder', vars: []}] // array of users data
     var indexer = [] // add each user finded in response
-    var matches = 0; // counts the amount of users that matches each specified criteria
+    var matches = []; // counts the amount of users that matches each specified criteria
 
     try{
 
@@ -255,7 +480,7 @@ contextRouter.post('/counter', async (req, res)=>{
                 var index = dictionary.findIndex((item) => item.user === el.user) // go find de index where it is
                 if(!dictionary[index].vars.includes(el.var)){ // if user's vars dont have el.var still added
                     dictionary[index].vars.push(el.var)       // => push it  
-                    dictionary[index].vars.length === qty_rules ? matches ++  : null; // if user have all rules, matches ++ 
+                    dictionary[index].vars.length === qty_rules ? matches.push(el.user)  : null; // if user have all rules, matches ++ 
                     indexer.push(el.user) // add user into indexer
                 }  
             }
@@ -266,7 +491,7 @@ contextRouter.post('/counter', async (req, res)=>{
                         user: el.user, vars: [el.var]
                     })
                     var index = dictionary.findIndex((item) => item.user === el.user) // go find de index where it is
-                    dictionary[index].vars.length === qty_rules ? matches ++  : null; // if user have all rules, matches ++
+                    dictionary[index].vars.length === qty_rules ? matches.push(el.user)  : null; // if user have all rules, matches ++
                     indexer.push(el.user) // add user into indexer
             }
         })
@@ -275,29 +500,29 @@ contextRouter.post('/counter', async (req, res)=>{
             console.log(e);
         }
 
-        console.log(matches, dictionary);
+        // console.log(matches, dictionary);
 
         res.send({matches, dictionary})
 })
 
 
 // CREATE CONTEXT BY USER
-
 contextRouter.post('/create', async (req, res)=>{
     var cratedContext = req.body;
-    var {context, user, timestamp, info, conditions} = cratedContext;
-    console.log(cratedContext, context)
+    var {context, user, timestamp, info, conditions, description, scope} = cratedContext;
     
     const newContext = new Context({
         user,
         timestamp,
         info,
         context,
-        condition: conditions
+        condition: conditions,
+        description,
+        scope
     })
 
     newContext.save()
-    
+
     .then((data)=>{
         const newEvent = Event({
             ref_id: data._id,
@@ -321,6 +546,13 @@ contextRouter.post('/create', async (req, res)=>{
         console.log({'FAIL': e});
     })
 
+})
+
+// COUNT NUMBERS OF SUBSCRIBERS
+contextRouter.post('/countsubscribers', async (req, res)=>{
+    var response = await Contexts4Users.find({context: req.body[0]}) 
+    console.log(response)
+    res.send(response)
 })
 
 module.exports = contextRouter;
