@@ -13,4 +13,9 @@ sampleRouter.get('/:indicator/:context', async(req, res) =>{
     res.send(response) 
 })
 
+// GET SAMPLE BY  CONTEXT
+sampleRouter.get('/:context', async(req, res) =>{
+    res.send( await Sample.find({context: req.params.context}))
+})
+
 module.exports = sampleRouter;
