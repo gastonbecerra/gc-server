@@ -2,7 +2,9 @@ var mongoose = require('mongoose');
 
 const SampleSchema = new mongoose.Schema({
     indicator: { type: String, },
-    context: { type: String, },
+    context: { 
+        type: String 
+    },
     values: {},
     info: { type: String }, 
     timestamp: {
