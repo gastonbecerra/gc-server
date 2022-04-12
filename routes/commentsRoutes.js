@@ -1,8 +1,6 @@
 var express = require('express');
 var commentstRouter = express.Router();
-var Event = require('../models/Events');
 var Comment = require('../models/Comments');
-const { check, validationResult } = require('express-validator');
 
 // GET COMMENTS BY ENTITY 
 commentstRouter.get('/:entity', async (req,res)=>{
@@ -70,6 +68,7 @@ commentstRouter.get('/:entity/:context/:indicator', async (req,res)=>{
 commentstRouter.get('/', async (req, res)=>{
     res.send(await Comment.find({}))
 })
+
 // CREATE COMMENT AND SAVE IT INTO DB
 commentstRouter.post('/', async (req, res)=>{
     console.log(req.body.base_reference);
