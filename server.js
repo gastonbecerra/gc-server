@@ -47,6 +47,8 @@ const indicatorRoutes = require('./routes/indicatorsRoutes');
 const varRouter = require('./routes/varRoutes');
 const valueRouter = require('./routes/valueRoutes');
 const userRouter = require('./routes/userRoutes');
+const eventRouter = require('./routes/eventsRoutes');
+const commentRouter = require('./routes/commentsRoutes');
 
 app.use('/samples', sampleRoutes);
 app.use('/contexts', contextRoutes);
@@ -54,6 +56,8 @@ app.use('/modules', modulesRoutes);
 app.use('/indicators', indicatorRoutes);
 app.use('/vars', varRouter);
 app.use('/values', valueRouter);
+app.use('/events', eventRouter);
+app.use('/comments', commentRouter);
 app.use('', userRouter)
 //---------------------------------------------------SERVER---------------------------------------------------//
 app.listen(process.env.PORT, () =>

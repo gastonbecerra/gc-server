@@ -8,7 +8,10 @@ const ContextSchema = new mongoose.Schema({
     },
     condition: { type: Object, },
     info: { type: String, },
-    user: { type: String, }
+    user: { type: String, },
+    description: { type: String },
+    scope: { type: Number },
+    subscribers: { type: Number }
 })
 
 const Context = mongoose.model("Context", ContextSchema, "contexts");

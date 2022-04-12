@@ -2,8 +2,10 @@ var express = require('express');
 var valueRouter = express.Router();
 var Var = require('../models/Vars');
 var Value = require('../models/Values');
-var request = require('request');
 var Axios = require('axios')
+var Event = require('../models/Events')
+
+
 // GETA ALL VALUES
 
 valueRouter.get('/', async (req, res) => {
@@ -22,6 +24,7 @@ valueRouter.get('/:user_id', async (req, res)=>{
 // UPDATE INPUT
 
 valueRouter.put('/:id', (req, res, next) => {    
+  console.log('put, ' + req.body);
   Value.findByIdAndUpdate(req.params.id, {
     $set: req.body
   }, (error, data) => {
@@ -37,19 +40,39 @@ valueRouter.put('/:id', (req, res, next) => {
 
 valueRouter.post('/', async (req, res)=>{
 
+  console.log(req.body);
+
   const newInput = new Value({
       user: req.body.user, 
       value: req.body.value, 
       timestamp: req.body.timestamp,
       var: req.body.var
   })
-  
   newInput.save()
+
   .then((data)=>{
-    res.send(true)
+    const newEvent = Event({
+      ref_id: data._id,
+      type: 'VALUE_CREATION',
+      user: data.user,
+      data: data,
+      timestamp: Date.now()
+    })
+  
+    newEvent.save()
+      .then((data)=>{
+        console.log({msge: 'SUCCESS CREATING EVENT VALUE'})
+      })
+      .catch((e)=>{
+        console.log({FAIL: e})
+      })
+  })
+  
+  .then((data)=>{
+    res.send(DATA)
   })
   .catch((error)=>{
-    res.send(false)
+    res.send({FAIL: error })
   })
   
   // fetch(`https://stormy-citadel-88496.herokuapp.com/calculate/indicador-usuario?usuario=${user}&indicador=${indicator}`)
