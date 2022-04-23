@@ -18,7 +18,7 @@ commentstRouter.get('/:entity', async (req,res)=>{
         case 'context':
             break;
     }
-    console.log(response)
+    
     try{
         response.length === 0 ? 
         res.status(400).send({
@@ -26,14 +26,13 @@ commentstRouter.get('/:entity', async (req,res)=>{
         }) 
         : res.send(response)
     }catch(e){
-        console.log('failure getting comments');
+        res.send('failure getting comments');
     }
 
 })
 
 // GET COMMENTS BY ENTITY AND CONTEXT
 commentstRouter.get('/:entity/:context/:indicator', async (req,res)=>{
-    console.log(req.params)
     let response = []; 
     switch(req.params.entity){
         case 'chart':
@@ -51,7 +50,7 @@ commentstRouter.get('/:entity/:context/:indicator', async (req,res)=>{
         case 'context':
             break;
     }
-    console.log(response)
+    
     try{
         response.length === 0 ? 
         res.status(400).send({
@@ -59,20 +58,22 @@ commentstRouter.get('/:entity/:context/:indicator', async (req,res)=>{
         }) 
         : res.send(response)
     }catch(e){
-        console.log('failure getting comments');
+        
     }
 
 })
 
 //GET ALL COMMENTS
 commentstRouter.get('/', async (req, res)=>{
-    res.send(await Comment.find({}))
+    res.send(await Comment.find({}).limit(10))
 })
 
 // CREATE COMMENT AND SAVE IT INTO DB
 commentstRouter.post('/', async (req, res)=>{
-    console.log(req.body.base_reference);
+    console.log(req.body);
     const { user, client_id, level, message, timestamp, comments } = req.body.message;
+    var type = 'comment'; // by default    
+    req.body.message.type !== (undefined && false) ? type = req.body.message.type : null;
 
     const comment = new Comment ({
         base_reference: req.body.base_reference,
@@ -82,6 +83,7 @@ commentstRouter.post('/', async (req, res)=>{
         timestamp,
         comments,
         client_id,
+        type,
         comment_reference: req.body.comment_reference
     })
 
@@ -89,6 +91,9 @@ commentstRouter.post('/', async (req, res)=>{
     then((data)=>{
         res.send(true)
     })
+
+    // ACTIVATE WEB SOCKET FOR PUSH NOTIFICATION
+
     .catch((e)=>{
         res.status(400).send({
             message: 'error saving comment',
