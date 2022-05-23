@@ -3,12 +3,11 @@ var sampleRouter = express.Router();
 var Sample = require('../models/Samples');
 
 
-// GET ALL SAMPLES
-sampleRouter.get('/', async (req, res) =>{
-    console.log('route');
-    var response = await Sample.find({})
+// GET ALL SAMPLES FOR SUBSCRIBED AND CREATED USER'S CONTEXTS 
+sampleRouter.post('/contexts', async (req, res) =>{
+    var response = await Sample.find({"context": {$in: req.body}})
     
-    response.legth === 0 ? 
+    response.legth <= 0 ? 
     res.status(412).send({
         message: ' no samples founded '
     })
@@ -32,21 +31,21 @@ sampleRouter.get('/:context', async (req, res) =>{
 })
 
 // GET SAMPLES BY CONTEXTS FOR USER
-sampleRouter.get('/:contexts', async (req, res)=>{
+// sampleRouter.get('/:contexts', async (req, res)=>{
 
-    var response = await Sample.find({
-        context: {$in: req.params.contexts}
-    })
+//     var response = await Sample.find({
+//         context: {$in: req.params.contexts}
+//     })
 
-    response.length === 0 ? response = false : null;
+//     response.length === 0 ? response = false : null;
 
-    response ? 
-        res.status(412).send({
-            message: ' no samples founded '
-        })
-    :
-        res.send(response)
-})
+//     response ? 
+//         res.status(412).send({
+//             message: ' no samples founded '
+//         })
+//     :
+//         res.send(response)
+// })
 
 // GET SAMPLE BY INDICATOR AND CONTEXT
 sampleRouter.get('/:indicator/:context', async (req, res) =>{

@@ -15,8 +15,8 @@ valueRouter.get('/', async (req, res) => {
 
 // GET ALL VALUES BY USER 
 
-valueRouter.get('/:user_id', async (req, res)=>{
-  var response = await Value.find({user: req.params.user_id})
+valueRouter.get('/user/:user', async (req, res)=>{
+  var response = await Value.find({user: req.params.user});
   res.send(response);
 })
 

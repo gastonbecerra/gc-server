@@ -2,6 +2,12 @@ var express = require('express');
 var commentstRouter = express.Router();
 var Comment = require('../models/Comments');
 
+//GET ALL COMMENTS
+commentstRouter.get('/:limit', async (req, res)=>{
+    res.send(await Comment.find({}).limit(req.params.limit))
+})
+
+
 // GET COMMENTS BY ENTITY 
 commentstRouter.get('/:entity', async (req,res)=>{
     let response = []; 
@@ -63,10 +69,6 @@ commentstRouter.get('/:entity/:context/:indicator', async (req,res)=>{
 
 })
 
-//GET ALL COMMENTS
-commentstRouter.get('/', async (req, res)=>{
-    res.send(await Comment.find({}).limit(10))
-})
 
 // CREATE COMMENT AND SAVE IT INTO DB
 commentstRouter.post('/', async (req, res)=>{
@@ -102,7 +104,6 @@ commentstRouter.post('/', async (req, res)=>{
     }) 
 
 })
-
 
 commentstRouter.delete('/:id', async (req, res)=>{
     res.send(await Comment.deleteOne({_id: req.params.id}));
